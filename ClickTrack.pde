@@ -7,6 +7,8 @@ Data output;
 float currentTime = 0;
 ArrayList<Note> notes;
 float timeOffset = 0;
+PFont font;
+int fontSize = 24;
 
 void setup() {
   size(512, 512, P2D);
@@ -15,9 +17,14 @@ void setup() {
   player.play();
 
   outputSetup();
+  
+  font = loadFont("Arial-Black-120.vlw");
+  textFont(font, fontSize);
 }
 
 void draw() {
+  updateControls();
+  
   currentTime = (player.position() / 1000.0) + timeOffset;
   
   background(0);
@@ -25,20 +32,9 @@ void draw() {
   for (int i=0; i<notes.size(); i++) {
     notes.get(i).run();
   }  
-}
-
-void keyPressed() {
-  if (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9') {
-    notes.add(new Note(int(""+key), currentTime));
-  }
   
-  if (key=='s' || key=='S') {
-    outputWrite();
-  }
-  
-  if (key==' ') {
-    player.rewind();
-  }
+  fill(200);
+  text(currentTime, fontSize / 2, fontSize * 1.5);
 }
 
 void outputSetup() {
