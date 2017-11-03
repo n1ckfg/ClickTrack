@@ -9,6 +9,10 @@ void keyPressed() {
     outputWrite();
   }
   
+  if (key=='r' || key=='R') {
+    outputSetup();
+  }
+  
   if (key==' ') {
     println("rewind: " + currentTime);
     player.rewind();
