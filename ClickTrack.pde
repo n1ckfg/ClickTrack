@@ -5,7 +5,7 @@ Minim minim;
 AudioPlayer player;
 Data output;
 float currentTime = 0;
-ArrayList<Note> notes = new ArrayList<Note>();
+ArrayList<Note> notes;
 float timeOffset = 0;
 
 void setup() {
@@ -14,7 +14,37 @@ void setup() {
   player = minim.loadFile("march.mp3");
   player.play();
 
+  outputSetup();
+}
+
+void draw() {
+  currentTime = (player.position() / 1000.0) + timeOffset;
+  
+  background(0);
+  
+  for (int i=0; i<notes.size(); i++) {
+    notes.get(i).run();
+  }  
+}
+
+void keyPressed() {
+  if (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9') {
+    notes.add(new Note(int(""+key), currentTime));
+  }
+  
+  if (key=='s' || key=='S') {
+    outputWrite();
+  }
+  
+  if (key==' ') {
+    player.rewind();
+  }
+}
+
+void outputSetup() {
+  notes = new ArrayList<Note>();
   output = new Data();
+  
   try {
     output.load("output.txt");
     for (int i=0; i<output.data.length; i++) {
@@ -26,32 +56,16 @@ void setup() {
   } catch (Exception e) { }  
 }
 
-void draw() {
-  currentTime = (player.position() / 1000.0) + timeOffset;
+void outputWrite() {
+  output.beginSave();
   
-  background(0);
+  Collections.sort(notes);
   
   for (int i=0; i<notes.size(); i++) {
-    notes.get(i).run();
-  }
-}
-
-void keyPressed() {
-  if (key=='0' || key=='1' || key=='2' || key=='3' || key=='4' || key=='5' || key=='6' || key=='7' || key=='8' || key=='9') {
-    notes.add(new Note(int(""+key), currentTime));
+    Note n = notes.get(i);
+    String s = n.index + ", " + n.startTime;
+    output.add(s);
   }
   
-  if (key=='s' || key=='S') {
-    output.beginSave();
-    
-    Collections.sort(notes);
-    
-    for (int i=0; i<notes.size(); i++) {
-      Note n = notes.get(i);
-      String s = n.index + ", " + n.startTime;
-      output.add(s);
-    }
-    
-    output.endSave("output.txt");
-  }
+  output.endSave("output.txt");
 }
